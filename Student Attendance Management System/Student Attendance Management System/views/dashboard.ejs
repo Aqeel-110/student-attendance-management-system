@@ -1,0 +1,75 @@
+<!-- views/dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Dashboard</title>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Welcome, <%= user %></h1>
+        <div class="attendance-info">
+            <h2>Attendance Statistics</h2>
+            <p id="presentDays">Days Present: <%= data.present %></p>
+            <p id="absentDays">Days Absent: <%= data.absent %></p>
+            <label for="monthSelect">Select Previous Month:</label>
+            <select id="monthSelect" onchange="updateChart()">
+                <option value="current">This Month</option>
+                <% Object.keys(data.previous_months).forEach((month) => { %>
+                    <option value="<%= month %>"><%= month %></option>
+                <% }) %>
+            </select>
+        </div>
+        <canvas id="attendanceChart" width="100" height="100"></canvas>
+        <button onclick="logout()">Logout</button>
+    </div>
+    <script src="/js/scripts.js"></script>
+    <script>
+        const attendanceData = {
+            current: [<%= data.present %>, <%= data.absent %>],
+            <% Object.keys(data.previous_months).forEach((month) => { %>
+                '<%= month %>': [<%= data.previous_months[month] %>, <%= data.absent %>],
+            <% }) %>
+        };
+
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        const attendanceChart = new Chart(ctx, {
+            type: 'pie',
+            data:{
+                labels:['Present', 'Absent'],
+                datasets:[{
+                    label:'Attendance',
+                    data:attendanceData.current,
+                    backgroundColor:['#36A2EB', '#FF6384'],
+                    borderWidth:1
+                }]
+            },
+        });
+
+        function updateChart(){
+            const selectedMonth = document.getElementById('monthSelect').value;
+
+
+            if (selectedMonth === 'current'){
+                document.getElementById('presentDays').innerText = `Days Present: ${attendanceData.current[0]}`;
+                document.getElementById('absentDays').innerText = `Days Absent: ${attendanceData.current[1]}`;
+                attendanceChart.data.datasets[0].data = attendanceData.current;
+            } else {
+                const selectedData = attendanceData[selectedMonth];
+                document.getElementById('presentDays').innerText = `Days Present: ${selectedData[0]}`;
+                document.getElementById('absentDays').innerText = `Days Absent: ${selectedData[1]}`;
+                attendanceChart.data.datasets[0].data = selectedData;
+            }
+
+            attendanceChart.update();
+        }
+
+        function logout(){
+            window.location.href = '/logout';
+        }
+    </script>
+</body>
+</html>
