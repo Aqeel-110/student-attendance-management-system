@@ -5,6 +5,10 @@
 ## Overview
 The **Student Attendance Management System** is a web-based application designed to efficiently manage and track student attendance.
 
+## Project Timeline
+- **Creation Date**: Before October 10, 2024
+- **Uploaded to GitHub**: 2024
+
 ## Features
 - **Monitoring:** View attendance records.
 - **User Authentication:** Secure login for users.
